@@ -15,6 +15,7 @@ interface UserState {
   setAuthenticated: (status: boolean) => void;
   setLoading: (status: boolean) => void;
   logout: () => void;
+  isAdmin: () => boolean;
 }
 
 export const useUserStore = create<UserState>()(

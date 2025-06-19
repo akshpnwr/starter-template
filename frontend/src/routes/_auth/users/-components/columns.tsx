@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { User } from '@/stores/useUserStore';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 
@@ -21,10 +22,10 @@ export type Payment = {
   email: string;
 };
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<User>[] = [
   {
-    accessorKey: 'status',
-    header: 'Status',
+    accessorKey: 'name',
+    header: 'Name',
   },
   {
     accessorKey: 'email',
@@ -32,6 +33,7 @@ export const columns: ColumnDef<Payment>[] = [
       return (
         <Button
           variant="ghost"
+          className="pl-0"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Email
@@ -41,16 +43,15 @@ export const columns: ColumnDef<Payment>[] = [
     },
   },
   {
-    accessorKey: 'amount',
-    header: 'Amount',
+    accessorKey: 'phone',
+    header: 'Phone',
+  },
+  {
+    accessorKey: 'role',
+    header: 'Role',
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('amount'));
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(amount);
-
-      return <div className="font-medium">{formatted}</div>;
+      const role = row.getValue('role') as string;
+      return <div className="font-medium">{role}</div>;
     },
   },
   {

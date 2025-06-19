@@ -2,6 +2,7 @@ import {
   createFileRoute,
   Link,
   Outlet,
+  redirect,
   useLocation,
 } from '@tanstack/react-router';
 import { AppSidebar } from '@/components/sidebar';
@@ -18,9 +19,24 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { authClient } from '@/lib/auth-client';
 
 export const Route = createFileRoute('/_auth')({
   component: RouteComponent,
+  beforeLoad: async ({ location }) => {
+    const { data: session } = await authClient.getSession();
+    if (!session) {
+      throw redirect({
+        to: '/auth/login',
+        search: {
+          // Use the current location to power a redirect after login
+          // (Do not use `router.state.resolvedLocation` as it can
+          // potentially lag behind the actual current location)
+          redirect: location.href,
+        },
+      });
+    }
+  },
 });
 
 function RouteComponent() {
@@ -55,7 +71,7 @@ function RouteComponent() {
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <main className="p-4">
+        <main className="flex-1 p-4">
           <Outlet />
         </main>
       </SidebarInset>

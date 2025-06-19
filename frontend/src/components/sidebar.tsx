@@ -1,5 +1,4 @@
 import { UserPlus, Users, Building } from 'lucide-react';
-
 import {
   Sidebar,
   SidebarContent,
@@ -9,13 +8,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Link, useLocation } from '@tanstack/react-router';
+import { Link, LinkProps, useLocation } from '@tanstack/react-router';
 import { SidebarFooterUser } from './sidebar-footer-user';
 import { useUserStore } from '@/stores/useUserStore';
 
-const menuItems = [
+interface LinkType extends LinkProps {
+  label: string;
+  icon: React.ElementType;
+}
+const menuItems: LinkType[] = [
   { icon: Users, label: 'Users', to: '/users' },
-  { icon: UserPlus, label: 'Add user', to: '/add-user' },
+  { icon: UserPlus, label: 'Add user', to: '/users/add' },
 ];
 
 export function AppSidebar() {

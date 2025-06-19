@@ -15,11 +15,11 @@ import { Route as PublicImport } from './routes/_public'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as PublicIndexImport } from './routes/_public/index'
 import { Route as AuthDashboardImport } from './routes/_auth/dashboard'
-import { Route as AuthAddUserImport } from './routes/_auth/add-user'
 import { Route as AuthUsersIndexImport } from './routes/_auth/users/index'
 import { Route as PublicAuthRegisterImport } from './routes/_public/auth/register'
 import { Route as PublicAuthPhoneImport } from './routes/_public/auth/phone'
 import { Route as PublicAuthLoginImport } from './routes/_public/auth/login'
+import { Route as AuthUsersAddImport } from './routes/_auth/users/add'
 
 // Create/Update Routes
 
@@ -42,12 +42,6 @@ const PublicIndexRoute = PublicIndexImport.update({
 const AuthDashboardRoute = AuthDashboardImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => AuthRoute,
-} as any)
-
-const AuthAddUserRoute = AuthAddUserImport.update({
-  id: '/add-user',
-  path: '/add-user',
   getParentRoute: () => AuthRoute,
 } as any)
 
@@ -75,6 +69,12 @@ const PublicAuthLoginRoute = PublicAuthLoginImport.update({
   getParentRoute: () => PublicRoute,
 } as any)
 
+const AuthUsersAddRoute = AuthUsersAddImport.update({
+  id: '/users/add',
+  path: '/users/add',
+  getParentRoute: () => AuthRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -93,13 +93,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicImport
       parentRoute: typeof rootRoute
     }
-    '/_auth/add-user': {
-      id: '/_auth/add-user'
-      path: '/add-user'
-      fullPath: '/add-user'
-      preLoaderRoute: typeof AuthAddUserImport
-      parentRoute: typeof AuthImport
-    }
     '/_auth/dashboard': {
       id: '/_auth/dashboard'
       path: '/dashboard'
@@ -113,6 +106,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexImport
       parentRoute: typeof PublicImport
+    }
+    '/_auth/users/add': {
+      id: '/_auth/users/add'
+      path: '/users/add'
+      fullPath: '/users/add'
+      preLoaderRoute: typeof AuthUsersAddImport
+      parentRoute: typeof AuthImport
     }
     '/_public/auth/login': {
       id: '/_public/auth/login'
@@ -148,14 +148,14 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthRouteChildren {
-  AuthAddUserRoute: typeof AuthAddUserRoute
   AuthDashboardRoute: typeof AuthDashboardRoute
+  AuthUsersAddRoute: typeof AuthUsersAddRoute
   AuthUsersIndexRoute: typeof AuthUsersIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
-  AuthAddUserRoute: AuthAddUserRoute,
   AuthDashboardRoute: AuthDashboardRoute,
+  AuthUsersAddRoute: AuthUsersAddRoute,
   AuthUsersIndexRoute: AuthUsersIndexRoute,
 }
 
@@ -180,9 +180,9 @@ const PublicRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof PublicRouteWithChildren
-  '/add-user': typeof AuthAddUserRoute
   '/dashboard': typeof AuthDashboardRoute
   '/': typeof PublicIndexRoute
+  '/users/add': typeof AuthUsersAddRoute
   '/auth/login': typeof PublicAuthLoginRoute
   '/auth/phone': typeof PublicAuthPhoneRoute
   '/auth/register': typeof PublicAuthRegisterRoute
@@ -191,9 +191,9 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '': typeof AuthRouteWithChildren
-  '/add-user': typeof AuthAddUserRoute
   '/dashboard': typeof AuthDashboardRoute
   '/': typeof PublicIndexRoute
+  '/users/add': typeof AuthUsersAddRoute
   '/auth/login': typeof PublicAuthLoginRoute
   '/auth/phone': typeof PublicAuthPhoneRoute
   '/auth/register': typeof PublicAuthRegisterRoute
@@ -204,9 +204,9 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_auth': typeof AuthRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
-  '/_auth/add-user': typeof AuthAddUserRoute
   '/_auth/dashboard': typeof AuthDashboardRoute
   '/_public/': typeof PublicIndexRoute
+  '/_auth/users/add': typeof AuthUsersAddRoute
   '/_public/auth/login': typeof PublicAuthLoginRoute
   '/_public/auth/phone': typeof PublicAuthPhoneRoute
   '/_public/auth/register': typeof PublicAuthRegisterRoute
@@ -217,9 +217,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
-    | '/add-user'
     | '/dashboard'
     | '/'
+    | '/users/add'
     | '/auth/login'
     | '/auth/phone'
     | '/auth/register'
@@ -227,9 +227,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
-    | '/add-user'
     | '/dashboard'
     | '/'
+    | '/users/add'
     | '/auth/login'
     | '/auth/phone'
     | '/auth/register'
@@ -238,9 +238,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_auth'
     | '/_public'
-    | '/_auth/add-user'
     | '/_auth/dashboard'
     | '/_public/'
+    | '/_auth/users/add'
     | '/_public/auth/login'
     | '/_public/auth/phone'
     | '/_public/auth/register'
@@ -275,8 +275,8 @@ export const routeTree = rootRoute
     "/_auth": {
       "filePath": "_auth.tsx",
       "children": [
-        "/_auth/add-user",
         "/_auth/dashboard",
+        "/_auth/users/add",
         "/_auth/users/"
       ]
     },
@@ -289,10 +289,6 @@ export const routeTree = rootRoute
         "/_public/auth/register"
       ]
     },
-    "/_auth/add-user": {
-      "filePath": "_auth/add-user.tsx",
-      "parent": "/_auth"
-    },
     "/_auth/dashboard": {
       "filePath": "_auth/dashboard.tsx",
       "parent": "/_auth"
@@ -300,6 +296,10 @@ export const routeTree = rootRoute
     "/_public/": {
       "filePath": "_public/index.tsx",
       "parent": "/_public"
+    },
+    "/_auth/users/add": {
+      "filePath": "_auth/users/add.tsx",
+      "parent": "/_auth"
     },
     "/_public/auth/login": {
       "filePath": "_public/auth/login.tsx",

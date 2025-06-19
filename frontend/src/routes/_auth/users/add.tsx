@@ -1,5 +1,5 @@
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -7,24 +7,24 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from '@/components/ui/form';
+} from '@/components/ui/form'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Phone, Mail, Lock } from 'lucide-react';
-import { createFileRoute } from '@tanstack/react-router';
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { FieldErrors, useForm } from 'react-hook-form';
-import { UserRole } from '@/types';
+} from '@/components/ui/select'
+import { Phone, Mail, Lock } from 'lucide-react'
+import { createFileRoute } from '@tanstack/react-router'
+import * as z from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { FieldErrors, useForm } from 'react-hook-form'
+import { UserRole } from '@/types'
 
-export const Route = createFileRoute('/_auth/add-user')({
+export const Route = createFileRoute('/_auth/users/add')({
   component: AddUser,
-});
+})
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: 'First name is required' }),
@@ -40,9 +40,9 @@ const formSchema = z.object({
   role: z.enum([UserRole.ADMIN, UserRole.VERIFICATION, UserRole.SALES], {
     required_error: 'Role is required',
   }),
-});
+})
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof formSchema>
 
 function FormErrorMessages({ errors }: { errors: FieldErrors<FormValues> }) {
   const errorMessage =
@@ -52,9 +52,9 @@ function FormErrorMessages({ errors }: { errors: FieldErrors<FormValues> }) {
     errors.email?.message ||
     errors.password?.message ||
     errors.confirmPassword?.message ||
-    errors.role?.message;
+    errors.role?.message
 
-  return <p className="text-xs font-light text-red-500">{errorMessage}</p>;
+  return <p className="text-xs font-light text-red-500">{errorMessage}</p>
 }
 
 export default function AddUser() {
@@ -69,12 +69,12 @@ export default function AddUser() {
     //   confirmPassword: '',
     //   role: '',
     // },
-  });
-  const { handleSubmit, formState } = form;
+  })
+  const { handleSubmit, formState } = form
 
   const onSubmit = (values: FormValues) => {
-    console.log(values);
-  };
+    console.log(values)
+  }
 
   return (
     <div className="">
@@ -277,5 +277,5 @@ export default function AddUser() {
         </form>
       </Form>
     </div>
-  );
+  )
 }

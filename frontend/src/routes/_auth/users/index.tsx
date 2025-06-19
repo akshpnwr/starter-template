@@ -1,89 +1,74 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { columns, Payment } from './-components/columns';
-import { DataTable } from '@/components/table/client-data-table';
+import { columns } from './-components/columns';
+import { User, useUserStore } from '@/stores/useUserStore';
+import UnauthorizedError from '@/components/unauthorized-error';
+import { useState } from 'react';
+import useDebounce from '@/hooks/useDebounce';
+import { authClient } from '@/lib/auth-client';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { DataTable } from './-components/data-table';
 
 export const Route = createFileRoute('/_auth/users/')({
   component: RouteComponent,
+  beforeLoad: () => {
+    const state = useUserStore.getState();
+    console.log(state);
+    // if (!isAdmin()) {
+    // throw new Error('Unauthorized');
+    // }
+  },
+  errorComponent: () => <UnauthorizedError />,
 });
 
 function RouteComponent() {
-  const data: Payment[] = [
-    {
-      id: '728ed52f',
-      amount: 100,
-      status: 'pending',
-      email: 'm@example.com',
+  const [pageSize, setPageSize] = useState(10);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const { data, error } = useQuery({
+    queryFn: async () => {
+      const { data, error } = await authClient.admin.listUsers({
+        query: {
+          limit: pageSize,
+          offset: pageIndex * pageSize,
+          searchField: 'email',
+          searchValue: debouncedSearchTerm, //
+        },
+      });
+
+      if (error) {
+        console.log(error?.message);
+        throw new Error(error.message);
+      }
+
+      return data;
     },
-    {
-      id: 'a1b2c3d4',
-      amount: 200,
-      status: 'completed',
-      email: 'jane.doe@example.com',
-    },
-    {
-      id: 'e5f6g7h8',
-      amount: 150,
-      status: 'failed',
-      email: 'john.smith@example.com',
-    },
-    {
-      id: 'i9j0k1l2',
-      amount: 300,
-      status: 'pending',
-      email: 'alice.wonder@example.com',
-    },
-    {
-      id: 'm3n4o5p6',
-      amount: 400,
-      status: 'completed',
-      email: 'bob.builder@example.com',
-    },
-    {
-      id: 'q7r8s9t0',
-      amount: 250,
-      status: 'failed',
-      email: 'charlie.brown@example.com',
-    },
-    {
-      id: 'u1v2w3x4',
-      amount: 350,
-      status: 'pending',
-      email: 'dora.explorer@example.com',
-    },
-    {
-      id: 'y5z6a7b8',
-      amount: 500,
-      status: 'completed',
-      email: 'elmo.red@example.com',
-    },
-    {
-      id: 'c9d0e1f2',
-      amount: 450,
-      status: 'failed',
-      email: 'fred.flintstone@example.com',
-    },
-    {
-      id: 'g3h4i5j6',
-      amount: 600,
-      status: 'pending',
-      email: 'george.jetson@example.com',
-    },
-    {
-      id: 'k7l8m9n0',
-      amount: 700,
-      status: 'completed',
-      email: 'harry.potter@example.com',
-    },
-    {
-      id: 'o1p2q3r4',
-      amount: 800,
-      status: 'failed',
-      email: 'iron.man@example.com',
-    },
-  ];
+    queryKey: ['users', pageSize, pageIndex, debouncedSearchTerm],
+    placeholderData: keepPreviousData,
+  });
+
+  if (error && !data) {
+    return <UnauthorizedError />;
+  }
+
+  const { users = [], total = 0 } = data || {};
+  const pageCount = Math.ceil(total / pageSize);
   return (
     <div>
-      <DataTable searchField="email" columns={columns} data={data} />
+      <DataTable
+        columns={columns}
+        data={users as User[]}
+        setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
+        page={{
+          pageCount,
+          pageIndex,
+          setPageIndex,
+          pageSize,
+          setPageSize,
+        }}
+      />
     </div>
   );
 }
