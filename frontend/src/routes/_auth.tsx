@@ -19,13 +19,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { authClient } from '@/lib/auth-client';
+import { useUserStore } from '@/stores/useUserStore';
 
 export const Route = createFileRoute('/_auth')({
   component: RouteComponent,
   beforeLoad: async ({ location }) => {
-    const { data: session } = await authClient.getSession();
-    if (!session) {
+    const { isAuthenticated } = useUserStore.getState();
+    if (!isAuthenticated) {
       throw redirect({
         to: '/auth/login',
         search: {
